@@ -1,0 +1,6 @@
+variant=anon: батько після запису дитини бачить 'C' (SHARED: зміна видима - працює як IPC)
+variant=file: батько після запису дитини бачить 'C' (SHARED: зміна видима - працює як IPC)
+   вміст файлу на диску/в page cache: 'C' (MAP_SHARED пише у файл)
+variant=anon_private: батько після запису дитини бачить 'A' (PRIVATE: copy-on-write, зміна НЕ видима - не IPC)
+variant=file_private: батько після запису дитини бачить 'A' (PRIVATE: copy-on-write, зміна НЕ видима - не IPC)
+   вміст файлу на диску/в page cache: 'a' (MAP_PRIVATE ніколи не пише у файл)

@@ -9,7 +9,7 @@
 #include <stddef.h>
 #include <sys/mman.h>
 
-#define RING_SIZE (1u << 20)
+#define RING_SIZE (1u << 22)
 #define LAT_MAX   65536
 #define MAGIC     0x49504331u
 

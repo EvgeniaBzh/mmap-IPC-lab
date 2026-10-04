@@ -1,0 +1,6 @@
+== run 1/5
+== run 2/5
+== run 3/5
+== run 4/5
+== run 5/5
+Готово: results_full/ (див. errors.log для невдалих запусків, напр. hugetlb/O_DIRECT)
