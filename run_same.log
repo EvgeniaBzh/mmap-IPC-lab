@@ -1,0 +1,4 @@
+== run 1/3
+== run 2/3
+== run 3/3
+Готово: results_samecore/ (див. errors.log для невдалих запусків, напр. hugetlb/O_DIRECT)

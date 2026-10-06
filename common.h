@@ -1,4 +1,3 @@
-/* common.h - спільні утиліти: таймінг, pin на ядра, read/write_full, статистика */
 #ifndef COMMON_H
 #define COMMON_H
 #ifndef _GNU_SOURCE
@@ -25,7 +24,7 @@
 #define CPU_RELAX() ((void)0)
 #endif
 
-/* якщо обидва процеси на одному ядрі - спін без sched_yield зависне надовго */
+// якщо обидва процеси на одному ядрі, спін без sched_yield зависне надовго
 static int g_yield = 0;
 static inline void relax(void) { if (g_yield) sched_yield(); else CPU_RELAX(); }
 
@@ -36,8 +35,8 @@ static inline uint64_t now_ns(void) {
 }
 
 /* role 0 = батько (producer/ініціатор), role 1 = дитина.
- * Керування: IPC_SAME_CORE=1 (обидва на одному ядрі), IPC_NO_PIN=1 (без pin),
- *            IPC_CPU_A / IPC_CPU_B (конкретні ядра). */
+ * керування: IPC_SAME_CORE=1 (обидва на одному ядрі), IPC_NO_PIN=1 (без pin),
+ * IPC_CPU_A / IPC_CPU_B (конкретні ядра). */
 static void pin_role(int role) {
     cpu_set_t m; CPU_ZERO(&m);
     sched_getaffinity(0, sizeof m, &m);
@@ -79,7 +78,7 @@ static int cmp_u64(const void *a, const void *b) {
     return (x > y) - (x < y);
 }
 
-/* samples = one-way latency у нс. Формат CSV: name,lat,msg,mean,median,p99,max */
+// samples = one-way latency у нс. формат csv: name,lat,msg,mean,median,p99,max
 static void print_lat(const char *name, size_t msg, uint64_t *s, size_t n) {
     qsort(s, n, sizeof *s, cmp_u64);
     double sum = 0; for (size_t i = 0; i < n; i++) sum += (double)s[i];
@@ -87,13 +86,13 @@ static void print_lat(const char *name, size_t msg, uint64_t *s, size_t n) {
            (unsigned long long)s[n / 2], (unsigned long long)s[(size_t)((double)n * 0.99)],
            (unsigned long long)s[n - 1]);
 }
-/* Формат CSV: name,thr,block,MB/s */
+// формат csv: name,thr,block,MB/s
 static void print_thr(const char *name, size_t block, size_t total, uint64_t ns) {
     double mbps = (double)total / (1024.0 * 1024.0) / ((double)ns / 1e9);
     printf("%s,thr,%zu,%.1f\n", name, block, mbps);
 }
 
-/* CPU/context switches (у stderr, щоб не ламати CSV) */
+// cpu/context switches (у stderr, щоб не ламати CSV)
 static void print_rusage(const char *name) {
     struct rusage a, c;
     getrusage(RUSAGE_SELF, &a); getrusage(RUSAGE_CHILDREN, &c);

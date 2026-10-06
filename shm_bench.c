@@ -1,8 +1,8 @@
-/* POSIX shared memory (shm_open + mmap).
+/* posix shared memory (shm_open + mmap).
  *   ./shm_bench lat <msg> <iters> [spin|sem] [both|a|b]
  *   ./shm_bench thr <block> <total_MiB> [-] [both|a|b]
- * both = fork (за замовчуванням); a/b = два НЕПОВ'ЯЗАНИХ процеси: запусти `a` у одному
- * терміналі й `b` з тими ж параметрами у другому (a створює об'єкт, b підключається). */
+ * both = fork (за замовчуванням); a/b = два неповязаних процеси: запусти a у одному
+ * терміналі й b з тими ж параметрами у другому (a створює об'єкт, b підключається). */
 #include "common.h"
 #include "shared_core.h"
 #include <fcntl.h>

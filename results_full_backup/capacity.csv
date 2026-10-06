@@ -1,0 +1,10 @@
+capacity,pipe,1,65536,F_GETPIPE_SZ=65536
+capacity,pipe,4096,65536,F_GETPIPE_SZ=65536
+capacity,pipe_setpipe_1MiB,4096,1048576,F_SETPIPE_SZ ret=1048576
+capacity,fifo,4096,65536,
+capacity,unix_stream,1,278,SO_SNDBUF=212992 SO_RCVBUF=212992
+capacity,unix_stream,1024,95232,SO_SNDBUF=212992 SO_RCVBUF=212992
+capacity,unix_dgram,1,278,SO_SNDBUF=212992 SO_RCVBUF=212992 (рахується в байтах; повідомлень=bytes/chunk)
+capacity,unix_dgram,1024,95232,SO_SNDBUF=212992 SO_RCVBUF=212992 (рахується в байтах; повідомлень=bytes/chunk)
+capacity,mqueue,64,640,maxmsg=10 -> 10 повідомлень = 640 байт
+capacity,mmap_shm_region,0,4260224,розмір відображення (ring-буфер даних=4194304)

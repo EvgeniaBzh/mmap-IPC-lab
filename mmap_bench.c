@@ -1,11 +1,11 @@
 /* mmap у різних режимах.
  *   ./mmap_bench <variant> lat <msg> <iters> [spin|sem]
  *   ./mmap_bench <variant> thr <block> <total_MiB>
- *   ./mmap_bench <variant> pf  <MiB>       (вартість page fault при першому/другому дотику)
- *   ./mmap_bench <variant> demo            (видимість запису між батьком і дитиною)
+ *   ./mmap_bench <variant> pf  <MiB> (вартість page fault при першому/другому дотику)
+ *   ./mmap_bench <variant> demo (видимість запису між батьком і дитиною)
  * variants: anon, anon_populate, anon_hugetlb, anon_private,
- *           file, file_populate, file_private, file_msync_async, file_msync_sync
- * (lat/thr потребують MAP_SHARED: *_private працюють лише в pf/demo)               */
+ * file, file_populate, file_private, file_msync_async, file_msync_sync
+ * (lat/thr потребують MAP_SHARED: *_private працюють лише в pf/demo)*/
 #include "common.h"
 #include "shared_core.h"
 #include <fcntl.h>
@@ -30,7 +30,7 @@ static void *map_variant(size_t len, int prefill) {
         fd = open(g_path, O_RDWR | O_CREAT | O_TRUNC, 0600);
         if (fd < 0) DIE("open");
         if (ftruncate(fd, (off_t)len)) DIE("ftruncate");
-        if (prefill) {                                   /* щоб сторінки вже були в page cache */
+        if (prefill) {// щоб сторінки вже були в page cache
             char *z = calloc(1, 1 << 20); memset(z, 'a', 1 << 20);
             for (size_t o = 0; o < len; o += 1 << 20) if (pwrite(fd, z, 1 << 20, (off_t)o) < 0) DIE("pwrite");
             free(z);
@@ -57,13 +57,13 @@ static void mode_pf(size_t mib) {
     uint64_t t0 = now_ns();
     volatile char *p = map_variant(len, 1);
     uint64_t t1 = now_ns();
-    for (size_t i = 0; i < pages; i++) p[i * 4096] = 1;   /* перший запис у кожну сторінку */
+    for (size_t i = 0; i < pages; i++) p[i * 4096] = 1;// перший запис у кожну сторінку
     uint64_t t2 = now_ns();
     getrusage(RUSAGE_SELF, &r1);
-    for (size_t i = 0; i < pages; i++) p[i * 4096] = 2;   /* другий прохід - без fault */
+    for (size_t i = 0; i < pages; i++) p[i * 4096] = 2;// другий прохід - без fault
     uint64_t t3 = now_ns();
     getrusage(RUSAGE_SELF, &r2);
-    /* name,pf,pages,mmap_us,first_touch_ns_per_page,second_touch_ns_per_page,minor_faults_first_pass */
+    // name,pf,pages,mmap_us,first_touch_ns_per_page,second_touch_ns_per_page,minor_faults_first_pass
     printf("mmap_%s,pf,%zu,%.1f,%.1f,%.1f,%ld\n", g_var, pages, (double)(t1 - t0) / 1e3,
            (double)(t2 - t1) / (double)pages, (double)(t3 - t2) / (double)pages, r1.ru_minflt - r0.ru_minflt);
     cleanup();
@@ -74,7 +74,7 @@ static void mode_demo(void) {
     volatile char *p = map_variant(len, 1);
     p[0] = 'A';
     pid_t pid = fork();
-    if (pid == 0) { p[0] = 'C'; _exit(0); }              /* дитина змінює свою копію/спільну сторінку */
+    if (pid == 0) { p[0] = 'C'; _exit(0); }// дитина змінює свою копію/спільну сторінку
     waitpid(pid, NULL, 0);
     printf("variant=%s: батько після запису дитини бачить '%c' (%s)\n", g_var, p[0],
            p[0] == 'C' ? "SHARED: зміна видима - працює як IPC" : "PRIVATE: copy-on-write, зміна НЕ видима - не IPC");

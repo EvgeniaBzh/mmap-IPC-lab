@@ -1,8 +1,8 @@
 #!/bin/bash
-# Повний прогін. Налаштування через env:
+# повний прогін. налаштування через env:
 #   REPEAT=5 ITERS=200000 TOTAL_MIB=512 ./run_all.sh
-#   IPC_SAME_CORE=1 ./run_all.sh   (обидва процеси на одному ядрі)
-#   OUT=dir                        (куди писати результати)
+#   IPC_SAME_CORE=1 ./run_all.sh (обидва процеси на одному ядрі)
+#   OUT=dir (куди писати результати)
 set -u
 REPEAT=${REPEAT:-5}; ITERS=${ITERS:-200000}; TOTAL_MIB=${TOTAL_MIB:-512}
 OUT=${OUT:-results}; mkdir -p "$OUT"

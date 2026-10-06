@@ -1,10 +1,9 @@
-/* File I/O vs mmap для файлів (throughput).
+/* file I/O vs mmap для файлів (throughput)
  *   ./file_bench <variant> <block> [total_MiB=512]
  * variants: write, write_fsync, write_odirect,
  *           read, read_odirect, read_rand,
  *           mmap_read, mmap_seq, mmap_rand, mmap_write, mmap_write_msync
- * FILE_PATH=... змінює шлях (за замовчуванням ./ipc_file.dat).
- * Для "холодного" кешу: sync; echo 3 | sudo tee /proc/sys/vm/drop_caches  (або *_odirect). */
+ * для холодного кешу: sync; echo 3 | sudo tee /proc/sys/vm/drop_caches  (або *_odirect). */
 #include "common.h"
 #include <fcntl.h>
 #include <sys/mman.h>

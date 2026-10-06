@@ -1,5 +1,5 @@
-/* POSIX message queue:  ./mq_bench lat <msg> [iters]   |   ./mq_bench thr <block> [total_MiB]
- * Обмеження: msg <= /proc/sys/fs/mqueue/msgsize_max (8192 за замовчуванням). */
+// posix message queue:  ./mq_bench lat <msg> [iters]   |   ./mq_bench thr <block> [total_MiB]
+// обмеження: msg <= /proc/sys/fs/mqueue/msgsize_max (8192 за замовчуванням).
 #include "common.h"
 #include <mqueue.h>
 #include <fcntl.h>

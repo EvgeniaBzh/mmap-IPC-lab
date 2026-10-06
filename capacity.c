@@ -1,5 +1,4 @@
-/* Місткість каналів: пишемо без читання в non-blocking режимі до EAGAIN.
- * CSV: capacity,<канал>,<розмір_запису>,<байт_або_повідомлень>,<примітка>  */
+// місткість каналів: пишемо без читання в non-blocking режимі до eagain
 #include "common.h"
 #include <fcntl.h>
 #include <mqueue.h>
@@ -11,7 +10,7 @@ static size_t fill(int fd, size_t chunk) {
     char *b = calloc(1, chunk); size_t tot = 0;
     for (;;) {
         ssize_t w = write(fd, b, chunk);
-        if (w < 0) { if (errno == EINTR) continue; break; }   /* EAGAIN - канал повний */
+        if (w < 0) { if (errno == EINTR) continue; break; }//eagain - канал повний
         tot += (size_t)w;
     }
     free(b); return tot;
@@ -20,7 +19,7 @@ static void nb(int fd) { fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK); }
 
 int main(void) {
     int fd[2];
-    /* pipe */
+    // pipe
     for (size_t ch = 1; ch <= 4096; ch *= 4096) {
         if (pipe(fd)) DIE("pipe"); nb(fd[1]);
         printf("capacity,pipe,%zu,%zu,F_GETPIPE_SZ=%d\n", ch, fill(fd[1], ch), fcntl(fd[1], F_GETPIPE_SZ));
@@ -30,12 +29,12 @@ int main(void) {
     int ok = fcntl(fd[1], F_SETPIPE_SZ, 1 << 20);
     printf("capacity,pipe_setpipe_1MiB,4096,%zu,F_SETPIPE_SZ ret=%d\n", fill(fd[1], 4096), ok);
     close(fd[0]); close(fd[1]);
-    /* fifo */
+    // fifo
     char fp[64]; snprintf(fp, sizeof fp, "/tmp/ipc_cap_%d", (int)getpid());
     mkfifo(fp, 0600);
     int fr = open(fp, O_RDONLY | O_NONBLOCK), fw = open(fp, O_WRONLY | O_NONBLOCK);
     printf("capacity,fifo,4096,%zu,\n", fill(fw, 4096)); close(fr); close(fw); unlink(fp);
-    /* socketpair stream / dgram */
+    // socketpair stream / dgram
     int types[2] = { SOCK_STREAM, SOCK_DGRAM };
     const char *tn[2] = { "unix_stream", "unix_dgram" };
     for (int t = 0; t < 2; t++) {
@@ -50,7 +49,7 @@ int main(void) {
             close(sv[0]); close(sv[1]);
         }
     }
-    /* POSIX mqueue */
+    // posix mqueue
     char qn[64]; snprintf(qn, sizeof qn, "/ipc_cap_%d", (int)getpid());
     struct mq_attr at = { .mq_maxmsg = 10, .mq_msgsize = 64 };
     mqd_t q = mq_open(qn, O_CREAT | O_RDWR | O_NONBLOCK, 0600, &at);
@@ -59,7 +58,7 @@ int main(void) {
         printf("capacity,mqueue,64,%zu,maxmsg=10 -> %zu повідомлень = %zu байт\n", cnt * 64, cnt, cnt * 64);
         mq_close(q); mq_unlink(qn);
     } else perror("mq_open");
-    /* mmap / shm */
+    // mmap / shm
     printf("capacity,mmap_shm_region,0,%zu,розмір відображення (ring-буфер даних=%u)\n", sizeof(region_t), RING_SIZE);
     return 0;
 }

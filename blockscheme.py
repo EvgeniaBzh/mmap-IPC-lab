@@ -45,7 +45,7 @@ p_page = d.vertex("p_page", "Взяти перші 20 елементів\n(па�
 io2 = d.vertex("io2", "Вивести: ранжований\nперелік рекомендацій", IO, SX, 1515, SW, 60)
 end = d.vertex("end", "Кінець", TERM, CX - 90, 1615, 180, 50)
 
-# ================= flows =================
+# flows
 d.edge("f1", "start", "io1", style=FLOW)
 d.edge("f2", "io1", "p1", style=FLOW)
 d.edge("f3", "p1", "d1", style=FLOW)

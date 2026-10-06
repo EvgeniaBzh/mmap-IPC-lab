@@ -1,0 +1,6 @@
+name,mode,pages,mmap_us,first_touch_ns_per_page,second_touch_ns_per_page,minflt_first_pass
+mmap_anon,pf,65536,4.9,1002.6,11.7,65539
+mmap_anon_populate,pf,65536,20623.6,436.6,9.2,131075
+mmap_file,pf,65536,24746.7,385.6,8.6,65801
+mmap_file_populate,pf,65536,26762.9,466.7,8.5,69897
+mmap_file_private,pf,65536,25149.4,1232.0,11.6,65801

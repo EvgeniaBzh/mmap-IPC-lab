@@ -43,7 +43,7 @@ with open(f"{d}/summary.md", "w") as f:
     f.write("## Throughput (MB/s), середнє по запусках\n\n" + md(thr_mean) + "\n\n")
     f.write("## Throughput, std (MB/s)\n\n" + md(thr_sd) + "\n")
 
-# ---- Throughput: 3 панелі (одна на групу), спільна вісь Y ----
+# throughput: 3 панелі (одна на групу), спільна вісь Y
 groups = ["Kernel IPC (pipe, socket, queue)", "Shared memory / mmap", "File I/O"]
 fig, axes = plt.subplots(1, 3, figsize=(16, 5), sharey=True)
 all_sizes = sorted(thr_mean.columns)
@@ -51,7 +51,7 @@ for ax, g in zip(axes, groups):
     for name, row in thr_mean.iterrows():
         if group(name) != g:
             continue
-        row = row.dropna()                     # прибирає NaN -> суцільні лінії
+        row = row.dropna()# прибирає NaN -> суцільні лінії
         if row.empty:
             continue
         ax.plot(row.index, row.values, marker="o", label=name)
@@ -68,7 +68,7 @@ fig.suptitle("Throughput vs block size")
 fig.tight_layout()
 fig.savefig(f"{d}/throughput.png", dpi=150)
 
-# ---- Latency: стовпчики для 64 B, кольори за групами ----
+# latency: стовпчики для 64 B, кольори за групами
 size = 64 if 64 in lat_med.columns else lat_med.columns[0]
 s = lat_med[size].dropna().sort_values()
 fig, ax = plt.subplots(figsize=(10, 6))
@@ -83,7 +83,7 @@ ax.legend(handles, COLORS.keys(), loc="lower right", fontsize=8)
 fig.tight_layout()
 fig.savefig(f"{d}/latency.png", dpi=150)
 
-# ---- Latency vs message size: лише представники кожного кластера ----
+# latency vs message size: лише представники кожного кластера
 REPS = [
     ("shm_spin", "shared memory + spin", "tab:red", "o"),
     ("mmap_file_msync_async_spin", "mmap file + msync(MS_ASYNC)", "tab:orange", "s"),

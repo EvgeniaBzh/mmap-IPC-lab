@@ -1,6 +1,6 @@
 /* shared_core.h - спільне ядро для mmap_bench і shm_bench:
- * регіон у спільній пам'яті з (а) ping-pong латентністю (spin або POSIX sem) і
- * (б) SPSC кільцевим буфером для throughput. Не залежить від способу створення регіону. */
+ * регіон у спільній пам'яті з (а) ping-pong латентністю (spin або posix sem) і
+ * (б) spsc кільцевим буфером для throughput. Не залежить від способу створення регіону. */
 #ifndef SHARED_CORE_H
 #define SHARED_CORE_H
 #include "common.h"
@@ -19,12 +19,12 @@ typedef struct {
     _Atomic uint32_t start;
     _Atomic uint32_t done;
     _Atomic uint32_t errors;
-    _Atomic uint32_t turn __attribute__((aligned(64)));   /* 0 - хід батька, 1 - хід дитини */
+    _Atomic uint32_t turn __attribute__((aligned(64)));// 0 - хід батька, 1 - хід дитини
     sem_t s_p2c __attribute__((aligned(64)));
     sem_t s_c2p __attribute__((aligned(64)));
     char data[LAT_MAX] __attribute__((aligned(64)));
-    _Atomic uint64_t head __attribute__((aligned(64)));  /* пише продюсер */
-    _Atomic uint64_t tail __attribute__((aligned(64)));  /* пише консюмер */
+    _Atomic uint64_t head __attribute__((aligned(64)));// пише продюсер
+    _Atomic uint64_t tail __attribute__((aligned(64)));// пише консюмер
     char ring[RING_SIZE] __attribute__((aligned(64)));
 } region_t;
 
@@ -41,7 +41,7 @@ static void wait_flag(_Atomic uint32_t *f, uint32_t v) {
 }
 static void sem_wait_loop(sem_t *s) { while (sem_wait(s) < 0 && errno == EINTR) ; }
 
-/* ---------------- latency ---------------- */
+// latency
 static void core_parent_lat(region_t *r, const char *name, size_t msg, size_t iters,
                             int use_sem, void (*hook)(void)) {
     if (msg < 1) msg = 1; if (msg > LAT_MAX) msg = LAT_MAX;
@@ -49,8 +49,8 @@ static void core_parent_lat(region_t *r, const char *name, size_t msg, size_t it
     wait_flag(&r->ready, 1);
     for (size_t i = 0; i < iters + WARMUP; i++) {
         uint64_t t0 = now_ns();
-        memset(r->data, (int)(i & 0xff), msg);          /* "передача" даних */
-        if (hook) hook();                                /* напр. msync() */
+        memset(r->data, (int)(i & 0xff), msg);// "передача" даних
+        if (hook) hook();// напр. msync()
         if (use_sem) { sem_post(&r->s_p2c); sem_wait_loop(&r->s_c2p); }
         else {
             atomic_store_explicit(&r->turn, 1, memory_order_release);
@@ -76,7 +76,7 @@ static void core_child_lat(region_t *r, size_t iters, int use_sem) {
     }
 }
 
-/* ---------------- throughput: SPSC ring ---------------- */
+// throughput: spsc ring
 static void ring_put(region_t *r, const char *src, size_t n) {
     uint64_t h = atomic_load_explicit(&r->head, memory_order_relaxed);
     while (h + n - atomic_load_explicit(&r->tail, memory_order_acquire) > RING_SIZE) relax();

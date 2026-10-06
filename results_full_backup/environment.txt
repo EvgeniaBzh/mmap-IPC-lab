@@ -1,0 +1,8 @@
+# env
+Linux b322bf227509 6.10.14-linuxkit #1 SMP Tue Apr 15 16:00:54 UTC 2025 aarch64 GNU/Linux
+CPU(s):                               11
+Model name:                           -
+               total        used        free      shared  buff/cache   available
+Mem:            11Gi       736Mi       8.2Gi       660Ki       2.9Gi        10Gi
+gcc (GCC) 14.4.0
+REPEAT=5 ITERS=200000 TOTAL_MIB=512 SAME_CORE=0

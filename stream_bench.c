@@ -1,6 +1,6 @@
 /* stream_bench: pipe | fifo | socketpair | unix | tcp
  *   ./stream_bench <kind> lat <msg_bytes> [iters]
- *   ./stream_bench <kind> thr <block_bytes> [total_MiB]                         */
+ *   ./stream_bench <kind> thr <block_bytes> [total_MiB]*/
 #include "common.h"
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
     kind = argv[1];
     int lat = !strcmp(argv[2], "lat");
     size_t sz = (size_t)atoll(argv[3]);
-    if (sz < 8) sz = 8;                        /* перші 8 байт = лічильник для перевірки */
+    if (sz < 8) sz = 8;// перші 8 байт = лічильник для перевірки
     size_t n = argc > 4 ? (size_t)atoll(argv[4]) : (lat ? 200000 : 1024);
     size_t total = n << 20, nblk = total / sz;
     prepare();
@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
     if (pid < 0) DIE("fork");
     char *buf = aligned_alloc(64, (sz + 63) & ~63ul);
     memset(buf, 0xAB, sz);
-    if (pid == 0) {                             /* ---- дитина ---- */
+    if (pid == 0) {// дитина
         pin_role(1);
         end_t e = open_end(1);
         if (lat) {
@@ -110,7 +110,7 @@ int main(int argc, char **argv) {
         }
         _exit(0);
     }
-    pin_role(0);                                /* ---- батько ---- */
+    pin_role(0);// батько
     end_t e = open_end(0);
     if (lat) {
         uint64_t *s = malloc(n * sizeof *s);
@@ -128,7 +128,7 @@ int main(int argc, char **argv) {
     } else {
         uint64_t t0 = now_ns();
         for (size_t b = 0; b < nblk; b++) { uint64_t seq = b; memcpy(buf, &seq, 8); write_full(e.w, buf, sz); }
-        char ack; read_full(e.r, &ack, 1);       /* чекаємо, поки споживач отримав усе */
+        char ack; read_full(e.r, &ack, 1);// чекаємо, поки споживач отримав усе
         print_thr(kind, sz, nblk * sz, now_ns() - t0);
     }
     int st; waitpid(pid, &st, 0);
